@@ -1,5 +1,13 @@
 import { useEffect, useState } from "react";
-import { Flex, Box, Heading, Text, List, ListItem } from "@chakra-ui/react";
+import {
+  Flex,
+  Box,
+  Heading,
+  Text,
+  List,
+  ListItem,
+  Image,
+} from "@chakra-ui/react";
 
 interface Player {
   rank: number;
@@ -50,7 +58,6 @@ const calculateAverageCashouts = (players: Player[]): Statistics => {
   };
 };
 
-// Function to find the most common rank
 const mostCommonRank = (players: Player[]): Statistics => {
   if (players.length === 0) {
     return { count: 0, averageCashouts: null, mostCommonRank: null };
@@ -105,6 +112,17 @@ const mostCommonRank = (players: Player[]): Statistics => {
   };
 };
 
+const computeStatisticsForPlatform = (data: Player[]): Statistics => {
+  const averageCashoutsResult = calculateAverageCashouts(data);
+  const mostCommonRankResult = mostCommonRank(data);
+
+  return {
+    count: data.length,
+    averageCashouts: averageCashoutsResult.averageCashouts,
+    mostCommonRank: mostCommonRankResult.mostCommonRank,
+  };
+};
+
 export default function Home() {
   const URLs = [
     "https://api.the-finals-leaderboard.com/v1/leaderboard/season2/crossplay",
@@ -154,10 +172,10 @@ export default function Home() {
         };
 
         const slicedResults = {
-          crossplay: results[0].data.slice(0, 100),
-          steam: results[1].data.slice(0, 100),
-          psn: results[2].data.slice(0, 100),
-          xbox: results[3].data.slice(0, 100),
+          crossplay: results[0].data.slice(0, 50),
+          steam: results[1].data.slice(0, 50),
+          psn: results[2].data.slice(0, 50),
+          xbox: results[3].data.slice(0, 50),
         };
 
         setFullStats(fullResults);
@@ -186,61 +204,146 @@ export default function Home() {
     }
   }, [fullStats]); // This effect is dependent on fullStats
 
-  function computeStatisticsForPlatform(data: Player[]): Statistics {
-    const averageCashoutsResult = calculateAverageCashouts(data);
-    const mostCommonRankResult = mostCommonRank(data);
-
-    return {
-      count: data.length,
-      averageCashouts: averageCashoutsResult.averageCashouts,
-      mostCommonRank: mostCommonRankResult.mostCommonRank,
-    };
-  }
-
   return (
-    <Flex
-      className="Stats Output"
-      justifyContent="space-around"
-      alignItems="flex-start"
-      flexWrap="wrap"
-    >
-      {Object.entries(platformStats).map(([platformKey, platformData]) => (
-        <Box
-          key={platformKey}
-          flex="1 1 20%"
-          margin="10px"
-          boxShadow="0 2px 4px rgba(0,0,0,0.1)"
-          padding="20px"
-          rounded={25}
-          backgroundColor={platformColors[platformKey]}
-          color="white" // Text color
-        >
-          <Heading as="h2" mb="4" textAlign="center" color="brand.500">
-            {platformKey.toUpperCase()}
+    <Box width="100%" minHeight="100vh" backgroundColor="#1A202C">
+      <Flex
+        width="100%"
+        backgroundColor="#1A202C"
+        color="white"
+        padding="20px"
+        justifyContent="center"
+        alignItems="center"
+        marginBottom="20px"
+      >
+        <Flex alignItems="center" backgroundColor="#2D3748" rounded={10}>
+          <Image
+            src="../thefinals_web_thefinals_small_01 (1).png"
+            alt="temp-logo"
+            height="50px"
+            marginRight="20px"
+          />
+          <Heading
+            as="h1"
+            size="xl"
+            fontFamily="'Saira Ultra Condensed', sans-serif"
+          >
+            Leaderboard & Stats
           </Heading>
-          <Box mb="4">
-            <Text>Total Players Analyzed: {platformData.count}</Text>
-            <Text>
-              Average Cashouts:{" "}
-              {platformData.averageCashouts
-                ? platformData.averageCashouts.toFixed(2)
-                : "N/A"}
-            </Text>
-            <Text>
-              Most Common Rank: {platformData.mostCommonRank || "N/A"}
-            </Text>
+        </Flex>
+      </Flex>
+      <Flex
+        className="Stats Output"
+        justifyContent="space-around"
+        alignItems="flex-start"
+        flexWrap="wrap"
+        padding="20px"
+        backgroundColor="#1A202C"
+      >
+        {Object.entries(platformStats).map(([platformKey, platformData]) => (
+          <Box
+            key={platformKey}
+            width={{ base: "100%", md: "calc(25% - 20px)" }} // Four columns on larger screens
+            margin="15px" // Distance between Platforms and Header
+            backgroundColor={platformColors[platformKey]}
+            color="#6B46C1" // Rank / Player / League Text
+            rounded={25} // Rounded corners for the platform box
+            overflow="hidden" // Hide overflow for rounded corners
+            fontWeight="bold"
+            boxShadow="0 2px 4px rgba(0,0,0,0.1)"
+          >
+            <Box padding="4">
+              <Heading
+                as="h2"
+                textAlign="center"
+                color="white"
+                fontFamily="'Saira', sans-serif"
+                marginBottom={4}
+              >
+                {platformKey.toUpperCase()}
+              </Heading>
+              <Text
+                fontFamily="'Saira', sans-serif"
+                textAlign="center"
+                color="white"
+                marginBottom={2}
+              >
+                Players:{" "}
+                {platformStats[platformKey as keyof PlatformStatistics].count}
+              </Text>
+              <Text
+                fontFamily="'Saira', sans-serif"
+                textAlign="center"
+                color="white"
+                marginBottom={2}
+              >
+                Avg Cashouts:{" "}
+                {platformStats[
+                  platformKey as keyof PlatformStatistics
+                ].averageCashouts?.toFixed(2)}
+              </Text>
+              <Text
+                fontFamily="'Saira', sans-serif"
+                textAlign="center"
+                color="white"
+              >
+                Avg Rank:{" "}
+                {
+                  platformStats[platformKey as keyof PlatformStatistics]
+                    .mostCommonRank
+                }
+              </Text>
+            </Box>
+            <List
+              rounded={25}
+              margin="5px"
+              spacing="3"
+              px="10"
+              pb="4"
+              backgroundColor="black"
+              fontFamily="'Saira Ultra Condensed', sans-serif"
+            >
+              {stats[platformKey as keyof typeof stats].map((player, index) => (
+                <ListItem key={index} padding="10px">
+                  <Box
+                    backgroundColor={"#171923"}
+                    padding="5px"
+                    borderRadius="md"
+                    rounded={25}
+                  >
+                    <Flex justifyContent="space-between" alignItems="center">
+                      <Text
+                        textAlign="left"
+                        flex="1"
+                        color="#553C9A"
+                        fontSize="large"
+                      >
+                        #{player.rank}
+                      </Text>
+                      <Text
+                        textAlign="center"
+                        flex="1"
+                        color="#553C9A"
+                        fontSize="large"
+                      >
+                        {player.name}
+                      </Text>
+                      <Text
+                        textAlign="right"
+                        flex="1"
+                        color="#553C9A"
+                        fontSize="large"
+                      >
+                        {player.league}
+                      </Text>
+                    </Flex>
+                  </Box>
+                </ListItem>
+              ))}
+            </List>
           </Box>
-          <List listStyleType="none" padding="0">
-            {stats[platformKey as keyof typeof stats].map((player, index) => (
-              <ListItem key={index} py="2">
-                {player.name} - Rank: {player.rank}, League: {player.league},
-                Cashouts: {player.cashouts}
-              </ListItem>
-            ))}
-          </List>
-        </Box>
-      ))}
-    </Flex>
+        ))}
+      </Flex>
+    </Box>
   );
 }
 
@@ -249,4 +352,12 @@ const platformColors = {
   steam: "#1B2838", // Example color, replace with actual colors
   psn: "#004DBB", // Example color, replace with actual colors
   xbox: "#107C10", // Example color, replace with actual colors
+};
+
+const styleColors = {
+  gray600: "#4A5568",
+  gray700: "#2D3748",
+  gray800: "#1A202C",
+  purple700: "#553C9A",
+  purple800: "#44337A",
 };
