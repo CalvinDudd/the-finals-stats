@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Flex, Box, Heading, Text, List, ListItem } from "@chakra-ui/react";
 
 interface Player {
   rank: number;
@@ -197,53 +198,55 @@ export default function Home() {
   }
 
   return (
-    <div
+    <Flex
       className="Stats Output"
-      style={{
-        display: "flex",
-        justifyContent: "space-around",
-        alignItems: "flex-start",
-        flexWrap: "wrap",
-      }}
+      justifyContent="space-around"
+      alignItems="flex-start"
+      flexWrap="wrap"
     >
       {Object.entries(platformStats).map(([platformKey, platformData]) => (
-        <div
+        <Box
           key={platformKey}
-          style={{
-            flex: "1 1 20%",
-            margin: "10px",
-            boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-            padding: "20px",
-          }}
+          flex="1 1 20%"
+          margin="10px"
+          boxShadow="0 2px 4px rgba(0,0,0,0.1)"
+          padding="20px"
+          rounded={25}
+          backgroundColor={platformColors[platformKey]}
+          color="white" // Text color
         >
-          <h2>{platformKey.toUpperCase()}</h2>
-          <div>
-            <p>Total Players Analyzed: {platformData.count}</p>
-            <p>
+          <Heading as="h2" mb="4" textAlign="center" color="brand.500">
+            {platformKey.toUpperCase()}
+          </Heading>
+          <Box mb="4">
+            <Text>Total Players Analyzed: {platformData.count}</Text>
+            <Text>
               Average Cashouts:{" "}
               {platformData.averageCashouts
                 ? platformData.averageCashouts.toFixed(2)
                 : "N/A"}
-            </p>
-            <p>Most Common Rank: {platformData.mostCommonRank || "N/A"}</p>
-          </div>
-          <ul
-            style={{
-              maxHeight: "200px",
-              overflowY: "auto",
-              listStyle: "none",
-              padding: 0,
-            }}
-          >
+            </Text>
+            <Text>
+              Most Common Rank: {platformData.mostCommonRank || "N/A"}
+            </Text>
+          </Box>
+          <List listStyleType="none" padding="0">
             {stats[platformKey as keyof typeof stats].map((player, index) => (
-              <li key={index} style={{ padding: "5px 0" }}>
+              <ListItem key={index} py="2">
                 {player.name} - Rank: {player.rank}, League: {player.league},
                 Cashouts: {player.cashouts}
-              </li>
+              </ListItem>
             ))}
-          </ul>
-        </div>
+          </List>
+        </Box>
       ))}
-    </div>
+    </Flex>
   );
 }
+
+const platformColors = {
+  crossplay: "#FF6F00", // Example color, replace with actual colors
+  steam: "#1B2838", // Example color, replace with actual colors
+  psn: "#004DBB", // Example color, replace with actual colors
+  xbox: "#107C10", // Example color, replace with actual colors
+};
