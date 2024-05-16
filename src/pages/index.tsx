@@ -178,6 +178,17 @@ const getRankImagePath = (rank: string) => {
   return `/${imagePath || "Embark.png"}`;
 };
 
+const getPlatformLogoPath = (platform: string) => {
+  const logoMapping: { [key: string]: string } = {
+    crossplay: "crossplay-logo.png",
+    steam: "steam-logo.png",
+    psn: "psn-logo.png",
+    xbox: "xbox-logo.png",
+  };
+
+  return `/${logoMapping[platform] || "default-logo.png"}`;
+};
+
 export default function Home() {
   const URLs = [
     "https://api.the-finals-leaderboard.com/v1/leaderboard/season2/crossplay",
@@ -313,15 +324,26 @@ export default function Home() {
             boxShadow="0 2px 4px rgba(0,0,0,0.1)"
           >
             <Box padding="4">
-              <Heading
-                as="h2"
-                textAlign="center"
-                color="white"
-                fontFamily="'Saira', sans-serif"
+              <Flex
+                alignItems="center"
+                justifyContent="center"
                 marginBottom={4}
               >
-                {platformKey.toUpperCase()}
-              </Heading>
+                <Heading
+                  as="h2"
+                  textAlign="center"
+                  color="white"
+                  fontFamily="'Saira', sans-serif"
+                  marginRight="10px"
+                >
+                  {platformKey.toUpperCase()}
+                </Heading>
+                <Image
+                  src={getPlatformLogoPath(platformKey)}
+                  alt={`${platformKey} logo`}
+                  height="50px"
+                />
+              </Flex>
               <Text
                 fontFamily="'Saira', sans-serif"
                 textAlign="center"
