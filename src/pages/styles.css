@@ -1,0 +1,10 @@
+body,
+html {
+  background-color: #1a202c; /* Ensure background color is set */
+}
+
+#root,
+#__next {
+  width: 100%;
+  min-height: 100%; /* Use min-height here as well */
+}

@@ -7,7 +7,10 @@ import {
   List,
   ListItem,
   Image,
+  Link,
 } from "@chakra-ui/react";
+
+import "./styles.css"; // Ensure this path is correct
 
 interface Player {
   rank: number;
@@ -40,6 +43,21 @@ interface PlatformStatistics {
   psn: Statistics;
   xbox: Statistics;
 }
+
+const platformColors = {
+  crossplay: "#FF6F00", // Example color, replace with actual colors
+  steam: "#1B2838", // Example color, replace with actual colors
+  psn: "#004DBB", // Example color, replace with actual colors
+  xbox: "#107C10", // Example color, replace with actual colors
+};
+
+const styleColors = {
+  gray600: "#4A5568",
+  gray700: "#2D3748",
+  gray800: "#1A202C",
+  purple700: "#553C9A",
+  purple800: "#44337A",
+};
 
 const calculateAverageCashouts = (players: Player[]): Statistics => {
   if (!players.length)
@@ -121,6 +139,43 @@ const computeStatisticsForPlatform = (data: Player[]): Statistics => {
     averageCashouts: averageCashoutsResult.averageCashouts,
     mostCommonRank: mostCommonRankResult.mostCommonRank,
   };
+};
+
+const getRankImagePath = (rank: string) => {
+  const rankMapping: { [key: string]: string } = {
+    "Diamond 1": "diamond-1.png",
+    "Diamond 2": "diamond-2.png",
+    "Diamond 3": "diamond-3.png",
+    "Diamond 4": "diamond-4.png",
+    "Platinum 1": "platinum-1.png",
+    "Platinum 2": "platinum-2.png",
+    "Platinum 3": "platinum-3.png",
+    "Platinum 4": "platinum-4.png",
+    "Gold 1": "gold-1.png",
+    "Gold 2": "gold-2.png",
+    "Gold 3": "gold-3.png",
+    "Gold 4": "gold-4.png",
+    "Silver 1": "silver-1.png",
+    "Silver 2": "silver-2.png",
+    "Silver 3": "silver-3.png",
+    "Silver 4": "silver-4.png",
+    "Bronze 1": "bronze-1.png",
+    "Bronze 2": "bronze-2.png",
+    "Bronze 3": "bronze-3.png",
+    "Bronze 4": "bronze-4.png",
+  };
+  console.log(`Rank received: "${rank}"`);
+
+  // Trim the rank and ensure case sensitivity
+  const trimmedRank = rank.trim();
+
+  const imagePath = rankMapping[trimmedRank];
+
+  if (!imagePath) {
+    console.error(`No image found for rank: "${trimmedRank}"`);
+  }
+
+  return `/${imagePath || "Embark.png"}`;
 };
 
 export default function Home() {
@@ -205,7 +260,13 @@ export default function Home() {
   }, [fullStats]); // This effect is dependent on fullStats
 
   return (
-    <Box width="100%" minHeight="100vh" backgroundColor="#1A202C">
+    <Box
+      width="100%"
+      minHeight="100vh"
+      backgroundColor="#1A202C"
+      position="relative"
+      overflowX="hidden"
+    >
       <Flex
         width="100%"
         backgroundColor="#1A202C"
@@ -217,7 +278,7 @@ export default function Home() {
       >
         <Flex alignItems="center" backgroundColor="#2D3748" rounded={10}>
           <Image
-            src="../thefinals_web_thefinals_small_01 (1).png"
+            src="/thefinals_web_thefinals_small_01 (1).png"
             alt="temp-logo"
             height="50px"
             marginRight="20px"
@@ -232,22 +293,22 @@ export default function Home() {
         </Flex>
       </Flex>
       <Flex
-        className="Stats Output"
-        justifyContent="space-around"
+        justifyContent="space-between" /* Ensure boxes are spaced evenly */
         alignItems="flex-start"
-        flexWrap="wrap"
         padding="20px"
         backgroundColor="#1A202C"
+        flexWrap="nowrap" /* Prevent wrapping */
+        overflowX="hidden" /* Prevent horizontal overflow */
       >
         {Object.entries(platformStats).map(([platformKey, platformData]) => (
           <Box
             key={platformKey}
-            width={{ base: "100%", md: "calc(25% - 20px)" }} // Four columns on larger screens
-            margin="15px" // Distance between Platforms and Header
+            width="24%" /* Ensure four boxes fit within 100% width */
+            margin="0 0.5%" /* Add a bit of margin between boxes */
             backgroundColor={platformColors[platformKey]}
-            color="#6B46C1" // Rank / Player / League Text
-            rounded={25} // Rounded corners for the platform box
-            overflow="hidden" // Hide overflow for rounded corners
+            color="#6B46C1"
+            rounded="25px"
+            overflow="hidden"
             fontWeight="bold"
             boxShadow="0 2px 4px rgba(0,0,0,0.1)"
           >
@@ -267,7 +328,7 @@ export default function Home() {
                 color="white"
                 marginBottom={2}
               >
-                Players:{" "}
+                Players Analyzed:{" "}
                 {platformStats[platformKey as keyof PlatformStatistics].count}
               </Text>
               <Text
@@ -286,7 +347,8 @@ export default function Home() {
                 textAlign="center"
                 color="white"
               >
-                Avg Rank:{" "}
+                Avg {platformKey.charAt(0).toUpperCase() + platformKey.slice(1)}{" "}
+                Rank:{" "}
                 {
                   platformStats[platformKey as keyof PlatformStatistics]
                     .mostCommonRank
@@ -294,7 +356,7 @@ export default function Home() {
               </Text>
             </Box>
             <List
-              rounded={25}
+              rounded="25px"
               margin="5px"
               spacing="3"
               px="10"
@@ -308,33 +370,43 @@ export default function Home() {
                     backgroundColor={"#171923"}
                     padding="5px"
                     borderRadius="md"
-                    rounded={25}
+                    rounded="25px"
                   >
                     <Flex justifyContent="space-between" alignItems="center">
                       <Text
+                        fontFamily="'Saira Ultra Condensed', sans-serif"
                         textAlign="left"
                         flex="1"
-                        color="#553C9A"
+                        color={
+                          index === 0
+                            ? "gold"
+                            : index === 1
+                            ? "silver"
+                            : index === 2
+                            ? "#cd7f32"
+                            : "#553C9A"
+                        }
                         fontSize="large"
+                        overflowWrap="break-word" /* Ensure text wraps within the container */
                       >
                         #{player.rank}
                       </Text>
                       <Text
+                        fontFamily="'Saira Ultra Condensed', sans-serif"
                         textAlign="center"
                         flex="1"
                         color="#553C9A"
                         fontSize="large"
+                        overflowWrap="break-word" /* Ensure text wraps within the container */
                       >
                         {player.name}
                       </Text>
-                      <Text
-                        textAlign="right"
-                        flex="1"
-                        color="#553C9A"
-                        fontSize="large"
-                      >
-                        {player.league}
-                      </Text>
+                      <Image
+                        src={getRankImagePath(player.league)}
+                        alt={player.league}
+                        height="30px"
+                        marginLeft="10px"
+                      />
                     </Flex>
                   </Box>
                 </ListItem>
@@ -343,21 +415,22 @@ export default function Home() {
           </Box>
         ))}
       </Flex>
+      <Box padding="20px" textAlign="center" color="white">
+        <Text fontSize="lg" fontFamily="'Saira Ultra Condensed', sans-serif">
+          This page is not affiliated with <b>Embark Studios</b>, the studio
+          behind <b>THE FINALS</b>. All images and data are their property.
+        </Text>
+        <Text fontSize="lg" mt="4">
+          Created by <b>Pug</b>.{" "}
+          <Link
+            href="https://github.com/CalvinDudd/the-finals-stats"
+            color="teal.500"
+            isExternal
+          >
+            GitHub
+          </Link>
+        </Text>
+      </Box>
     </Box>
   );
 }
-
-const platformColors = {
-  crossplay: "#FF6F00", // Example color, replace with actual colors
-  steam: "#1B2838", // Example color, replace with actual colors
-  psn: "#004DBB", // Example color, replace with actual colors
-  xbox: "#107C10", // Example color, replace with actual colors
-};
-
-const styleColors = {
-  gray600: "#4A5568",
-  gray700: "#2D3748",
-  gray800: "#1A202C",
-  purple700: "#553C9A",
-  purple800: "#44337A",
-};
