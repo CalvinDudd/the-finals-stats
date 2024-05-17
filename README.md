@@ -46,5 +46,3 @@ This project was created to develop my skills and build up my resume.
 Embark Studios for developing THE FINALS.
 All images and data are the property of Embark Studios.
 Note: This page is not affiliated with Embark Studios, the studio behind THE FINALS. All images and data are their property.
-
-Created by Pug. GitHub ---> https://github.com/CalvinDudd/the-finals-stats
